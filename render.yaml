@@ -3,7 +3,7 @@ services:
     name: mhc-dashboard-backend
     env: docker
     region: singapore
-    plan: starter
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
@@ -24,11 +24,15 @@ services:
         sync: false
       - key: APP_BOOTSTRAP_PASSWORD
         sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://mhc-assistant-programmer-prep.netlify.app
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
     healthCheckPath: /actuator/health
 
 databases:
   - name: mhc-db
     databaseName: mhcdb
     user: mhcuser
-    plan: starter
+    plan: free
     region: singapore
