@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: mhc-dashboard-backend
+    env: docker
+    region: singapore
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: mhc-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: mhc-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: mhc-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_BOOTSTRAP_USERNAME
+        sync: false
+      - key: APP_BOOTSTRAP_PASSWORD
+        sync: false
+    healthCheckPath: /actuator/health
+
+databases:
+  - name: mhc-db
+    databaseName: mhcdb
+    user: mhcuser
+    plan: starter
+    region: singapore
