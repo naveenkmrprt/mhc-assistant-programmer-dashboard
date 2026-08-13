@@ -4,7 +4,8 @@ services:
     env: docker
     region: singapore
     plan: free
-    dockerfilePath: ./backend/Dockerfile
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
