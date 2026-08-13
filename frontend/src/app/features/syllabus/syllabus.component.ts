@@ -56,18 +56,18 @@ import { SyllabusCategory, SubTopic } from '../../core/models/models';
               <div class="card-title">PART-{{ part }} — {{ partMeta[part].label }}</div>
               <div class="progress-track" style="width:200px;">
                 <div class="progress-fill" [class]="partMeta[part].color"
-                     [style.width.%]="partPct[part] ?? 0"></div>
+                     [style.width.%]="partPct[part] ? partPct[part] : 0"></div>
               </div>
             </div>
             <span class="stat-num" style="font-size:1.8rem"
-                  [class.green]="(partPct[part]??0) >= 70"
-                  [class.red]="(partPct[part]??0) < 30">
-              {{ partPct[part] ?? 0 }}%
+                  [class.green]="(partPct[part] ? partPct[part] : 0) >= 70"
+                  [class.red]="(partPct[part] ? partPct[part] : 0) < 30">
+              {{ partPct[part] ? partPct[part] : 0 }}%
             </span>
           </div>
 
           <div class="accordion-list">
-            @for (cat of categoriesByPart[part] ?? []; track cat.id) {
+            @for (cat of categoriesByPart[part] ? categoriesByPart[part] : []; track cat.id) {
               <details class="accordion-item" [open]="part === 'B'">
                 <summary class="accordion-header">
                   <span class="cat-name">{{ cat.name }}</span>

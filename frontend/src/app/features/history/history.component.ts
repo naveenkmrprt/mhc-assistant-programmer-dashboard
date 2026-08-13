@@ -66,8 +66,8 @@ import { DailyLog, QuizSession } from '../../core/models/models';
                 <tr>
                   <td class="mono" style="color:var(--grey-500)">{{ i + 1 }}</td>
                   <td class="mono" style="font-size:0.75rem">{{ s.startedAt | slice:0:10 }}</td>
-                  <td><span class="badge" [class]="s.sessionType === 'MOCK_EXAM' ? 'badge-red' : 'badge-yellow'">
-                    {{ s.sessionType }}</span></td>
+                  <td><span class="badge" [class]="s.mockMode === 'MOCK_EXAM' ? 'badge-red' : 'badge-yellow'">
+                    {{ s.mockMode }}</span></td>
                   <td class="mono">{{ s.totalQuestions }}</td>
                   <td class="mono" style="color:var(--green)">{{ s.correctAnswers }}</td>
                   <td class="mono" style="color:var(--red)">{{ s.wrongAnswers }}</td>

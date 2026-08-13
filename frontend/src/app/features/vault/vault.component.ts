@@ -95,8 +95,8 @@ type VaultState = 'list' | 'running' | 'result';
         <div class="quiz-main">
           <div class="q-meta">
             <span class="label">Q {{ currentIndex + 1 }} / {{ questions.length }}</span>
-            <span class="badge" [class]="diffBadge(questions[currentIndex].difficulty)">
-              {{ questions[currentIndex].difficulty }}
+            <span class="badge" [class]="diffBadge(questions[currentIndex].difficultyEstimate || 'MEDIUM')">
+              {{ questions[currentIndex].difficultyEstimate || 'MEDIUM' }}
             </span>
             <span class="label" style="margin-left:auto">{{ questions[currentIndex].topicName }}</span>
           </div>
@@ -195,6 +195,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   customCount = 50;
   mockResult: QuizSession | null = null;
   private sessionId = 0;
+  private sessionVersion = 0;
   private timerSub!: Subscription;
 
   papers: MockPaper[] = [
@@ -236,10 +237,11 @@ export class VaultComponent implements OnInit, OnDestroy {
   startMock(paper: MockPaper): void {
     this.activePaper = paper;
     this.timeLeft = paper.durationMin * 60;
-    // Pull from ingested questions (topic-agnostic random pull for now)
-    this.api.startQuiz(Math.min(paper.totalMarks, 100), 'MOCK_EXAM', true).subscribe({
+    // Pull from ingested questions
+    this.api.startQuiz({ mockMode: 'OFFICIAL_FORMAT' }).subscribe({
       next: r => {
         this.sessionId = r.sessionId;
+        this.sessionVersion = r.version || 0;
         this.questions = r.questions;
         this.answers = r.questions.map(() => null);
         this.currentIndex = 0;
@@ -267,9 +269,16 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   submitMock(): void {
     this.timerSub?.unsubscribe();
-    const answerMap: Record<number, string> = {};
-    this.questions.forEach((q, i) => { if (this.answers[i]) answerMap[q.id] = this.answers[i]!; });
-    this.api.submitQuiz(this.sessionId, answerMap, true).subscribe({
+    const request = {
+      version: this.sessionVersion,
+      answers: this.questions.map((q, i) => ({
+        questionId: q.id,
+        selectedOption: this.answers[i] || undefined,
+        isGuess: false,
+        isSkipped: this.answers[i] === null
+      }))
+    };
+    this.api.submitQuiz(this.sessionId, request).subscribe({
       next: r => { this.mockResult = r; this.vaultState = 'result'; },
       error: () => alert('Submission failed.')
     });

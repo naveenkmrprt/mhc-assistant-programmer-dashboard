@@ -51,11 +51,11 @@ import { TimerComponent } from '../clock/timer.component';
               <div class="part-row">
                 <div class="part-header">
                   <span class="part-label">{{ p.label }}</span>
-                  <span class="part-pct mono">{{ progress[p.key]?.pct ?? 0 }}%</span>
+                  <span class="part-pct mono">{{ progress[p.key] ? progress[p.key].pct : 0 }}%</span>
                 </div>
                 <div class="progress-track">
                   <div class="progress-fill" [class]="p.color"
-                       [style.width.%]="progress[p.key]?.pct ?? 0"></div>
+                       [style.width.%]="progress[p.key] ? progress[p.key].pct : 0"></div>
                 </div>
               </div>
             }
