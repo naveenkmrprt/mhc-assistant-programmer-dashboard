@@ -56,14 +56,24 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Restrict CORS for production
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "https://*.netlify.app"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        
+        // Parse comma-separated origins from env var
+        List<String> origins = java.util.Arrays.asList(allowedOrigins.split(","));
+        
+        // Use setAllowedOriginPatterns to support wildcards properly if users add them,
+        // or standard setAllowedOrigins for literal strings. setAllowedOriginPatterns handles both.
+        configuration.setAllowedOriginPatterns(origins);
+        
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
