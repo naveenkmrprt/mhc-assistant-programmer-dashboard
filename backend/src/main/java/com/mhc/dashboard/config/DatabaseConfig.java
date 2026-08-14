@@ -22,11 +22,24 @@ public class DatabaseConfig {
     @Bean
     public DataSource dataSource() {
         String finalUrl = dbUrl;
-        if (finalUrl != null && !finalUrl.startsWith("jdbc:")) {
-            if (finalUrl.startsWith("postgres://")) {
-                finalUrl = finalUrl.replace("postgres://", "jdbc:postgresql://");
-            } else if (finalUrl.startsWith("postgresql://")) {
-                finalUrl = "jdbc:" + finalUrl;
+        if (finalUrl != null) {
+            try {
+                // Remove jdbc: prefix if present so java.net.URI can parse it
+                String cleanUri = finalUrl.replace("jdbc:", "");
+                java.net.URI uri = new java.net.URI(cleanUri);
+                String host = uri.getHost();
+                int port = uri.getPort();
+                String path = uri.getPath();
+                
+                finalUrl = "jdbc:postgresql://" + host + (port != -1 ? ":" + port : "") + path;
+            } catch (Exception e) {
+                // Fallback if parsing fails
+                if (!finalUrl.startsWith("jdbc:")) {
+                    finalUrl = finalUrl.replace("postgres://", "jdbc:postgresql://");
+                    if (!finalUrl.startsWith("jdbc:")) {
+                        finalUrl = "jdbc:" + finalUrl;
+                    }
+                }
             }
         }
         return DataSourceBuilder.create()
