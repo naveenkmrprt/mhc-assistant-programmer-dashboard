@@ -56,20 +56,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @org.springframework.beans.factory.annotation.Value("${app.cors.allowed-origins:http://localhost:4200}")
+    // Reads the ALLOWED_ORIGINS environment variable set in Render dashboard
+    // Falls back to localhost for local dev
+    @org.springframework.beans.factory.annotation.Value("${ALLOWED_ORIGINS:http://localhost:4200}")
     private String allowedOrigins;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
+        System.out.println("[SecurityConfig] CORS allowedOrigins value: " + allowedOrigins);
+
         // Parse comma-separated origins from env var
         List<String> origins = java.util.Arrays.asList(allowedOrigins.split(","));
         
-        // Use setAllowedOriginPatterns to support wildcards properly if users add them,
-        // or standard setAllowedOrigins for literal strings. setAllowedOriginPatterns handles both.
+        // setAllowedOriginPatterns supports wildcards and literal URLs
         configuration.setAllowedOriginPatterns(origins);
-        
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
@@ -80,3 +83,4 @@ public class SecurityConfig {
         return source;
     }
 }
+
