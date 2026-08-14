@@ -30,6 +30,8 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
     healthCheckPath: /actuator/health
+    ignoredPaths:
+      - frontend/**
 
 databases:
   - name: mhc-db
