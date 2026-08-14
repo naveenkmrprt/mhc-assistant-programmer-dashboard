@@ -6,6 +6,6 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE quiz_session
+ALTER TABLE quiz_sessions
 ADD COLUMN user_id BIGINT REFERENCES users(id),
 ADD COLUMN version BIGINT DEFAULT 0;

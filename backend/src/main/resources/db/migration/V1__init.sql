@@ -5,7 +5,7 @@
 
 -- 1. Exam Rule Sets
 CREATE TABLE exam_rule_sets (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     exam_cycle VARCHAR(50) NOT NULL,
     notification_number VARCHAR(100),
     notification_date DATE,
@@ -17,7 +17,7 @@ CREATE TABLE exam_rule_sets (
     written_total_marks INT,
     part_a_marks INT,
     part_b_marks INT,
-    negative_mark_per_wrong_answer DOUBLE,
+    negative_mark_per_wrong_answer DOUBLE PRECISION,
     skill_test_marks INT,
     viva_marks INT,
     part_a_final_merit_included BOOLEAN,
@@ -31,7 +31,7 @@ CREATE TABLE exam_rule_sets (
 
 -- 2. Syllabus Categories
 CREATE TABLE syllabus_categories (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     part VARCHAR(10) NOT NULL,
     name VARCHAR(255) NOT NULL,
     total_marks INT,
@@ -42,7 +42,7 @@ CREATE TABLE syllabus_categories (
 
 -- 3. Syllabus SubTopics
 CREATE TABLE syllabus_subtopics (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     category_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     is_completed BOOLEAN DEFAULT FALSE,
@@ -53,7 +53,7 @@ CREATE TABLE syllabus_subtopics (
 
 -- 4. Questions
 CREATE TABLE questions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     category_id BIGINT,
     micro_topic VARCHAR(255),
     question_text TEXT NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE questions (
     correct_option VARCHAR(1) NOT NULL,
     difficulty_estimate VARCHAR(50) DEFAULT 'MEDIUM',
     difficulty_confidence VARCHAR(50),
-    ocr_confidence DOUBLE,
+    ocr_confidence DOUBLE PRECISION,
     duplicate_hash VARCHAR(255),
     source_document VARCHAR(255),
     source_url VARCHAR(500),
@@ -79,7 +79,7 @@ CREATE TABLE questions (
 
 -- 5. Quiz Sessions
 CREATE TABLE quiz_sessions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     session_type VARCHAR(20) DEFAULT 'PRACTICE',
     mock_mode VARCHAR(50),
     rule_set_id BIGINT,
@@ -94,8 +94,8 @@ CREATE TABLE quiz_sessions (
     correct_answers INT DEFAULT 0,
     wrong_answers INT DEFAULT 0,
     unattempted INT DEFAULT 0,
-    raw_score DOUBLE DEFAULT 0.0,
-    accuracy_pct DOUBLE DEFAULT 0.0,
+    raw_score DOUBLE PRECISION DEFAULT 0.0,
+    accuracy_pct DOUBLE PRECISION DEFAULT 0.0,
     duration_seconds BIGINT DEFAULT 0,
     weak_topics_json TEXT DEFAULT '[]',
     CONSTRAINT fk_quiz_rule_set FOREIGN KEY (rule_set_id) REFERENCES exam_rule_sets(id)
@@ -103,7 +103,7 @@ CREATE TABLE quiz_sessions (
 
 -- 6. Quiz Answers
 CREATE TABLE quiz_answers (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     session_id BIGINT NOT NULL,
     question_id BIGINT NOT NULL,
     selected_option VARCHAR(1),
@@ -121,12 +121,12 @@ CREATE TABLE quiz_answers (
 
 -- 7. Topic Progress
 CREATE TABLE topic_progress (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     topic_id BIGINT NOT NULL,
     is_completed BOOLEAN DEFAULT FALSE,
     last_practiced_at TIMESTAMP,
     mastery_level VARCHAR(50) DEFAULT 'UNSEEN',
-    accuracy_pct DOUBLE DEFAULT 0.0,
+    accuracy_pct DOUBLE PRECISION DEFAULT 0.0,
     attempts INT DEFAULT 0,
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
@@ -135,7 +135,7 @@ CREATE TABLE topic_progress (
 
 -- 8. Daily Logs
 CREATE TABLE daily_logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     log_date DATE UNIQUE NOT NULL,
     questions_attempted INT DEFAULT 0,
     time_spent_minutes INT DEFAULT 0,
@@ -163,7 +163,7 @@ INSERT INTO exam_rule_sets (
 ) VALUES (
     'MHC_AP_2025', '171/2025', '2025-08-10', 'Notification No. 171/2025',
     'https://mhc.tn.gov.in/recruitment/docs/NOTIFICATION%20171%20of%20%202025%20-%20ASSISTANT%20PROGRAMMER.pdf',
-    'Page 11', 'The objective type test will consist of 120 multiple choice questions... 50 marks for Tamil Eligibility Test... 70 marks for General Knowledge and Subject tests. 1/4th mark will be deducted for each incorrect answer.', 
+    'Page 11', 'The objective type test will consist of 120 multiple choice questions... 50 marks for Tamil Eligibility Test... 70 marks for General Knowledge and Subject tests. 1/4th mark will be deducted for each incorrect answer.',
     'OFFICIAL_CONFIRMED', 120, 50, 70, 0.25, 50, 25, FALSE, TRUE, NULL, 'OFFICIAL_NOT_FOUND', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 );
 
@@ -178,6 +178,9 @@ INSERT INTO syllabus_categories (id, part, name, total_marks, negative_marking, 
 (8, 'B', '(g) General Intelligence', 70, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (9, 'C', 'Skill Test', 50, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (10, 'D', 'Viva-Voce', 25, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Reset sequence after explicit ID inserts
+SELECT setval('syllabus_categories_id_seq', 10);
 
 INSERT INTO syllabus_subtopics (category_id, name, is_completed) VALUES
 (1, 'Tamil Grammar (Ilakkanam) — Upto SSLC Standard', FALSE),
