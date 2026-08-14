@@ -1,7 +1,6 @@
 [build]
   command = "npm run build -- --configuration production"
   publish = "dist/frontend/browser"
-  ignore = "git diff --quiet HEAD~ HEAD -- frontend/"
 
 [[redirects]]
   from = "/*"
