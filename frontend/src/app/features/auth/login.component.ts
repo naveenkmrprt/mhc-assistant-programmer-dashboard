@@ -31,58 +31,95 @@ import { AuthService } from '../../core/auth.service';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #f0f2f5;
+    }
     .login-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f5f5f5;
+      height: 100%;
+      background: #f0f2f5;
     }
     .login-box {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      background: #ffffff !important;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
       width: 100%;
       max-width: 400px;
     }
     h2 {
       margin-top: 0;
+      margin-bottom: 1.5rem;
       text-align: center;
-      color: #333;
+      color: #1a1a2e !important;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: monospace;
     }
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #555 !important;
+      font-family: sans-serif;
     }
     input {
       width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 0.65rem 0.75rem;
+      border: 1.5px solid #d0d5dd;
+      border-radius: 6px;
       box-sizing: border-box;
+      font-size: 0.95rem;
+      color: #1a1a1a !important;
+      background: #ffffff !important;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: sans-serif;
+    }
+    input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.12);
     }
     button {
       width: 100%;
       padding: 0.75rem;
       background-color: #007bff;
-      color: white;
+      color: #ffffff !important;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background-color 0.2s;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
     }
     button:disabled {
       background-color: #cccccc;
+      cursor: not-allowed;
     }
     .error-msg {
-      color: red;
+      color: #e53935 !important;
+      background: #fff5f5;
+      border: 1px solid #fcd0d0;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
       margin-bottom: 1rem;
       text-align: center;
+      font-size: 0.9rem;
+      font-family: sans-serif;
     }
   `]
 })

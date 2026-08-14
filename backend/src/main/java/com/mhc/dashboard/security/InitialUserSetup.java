@@ -15,6 +15,7 @@ public class InitialUserSetup implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // Spring Boot automatically maps APP_BOOTSTRAP_USERNAME env var -> app.bootstrap.username
     @Value("${app.bootstrap.username:}")
     private String bootstrapUsername;
 
@@ -23,13 +24,28 @@ public class InitialUserSetup implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0 && !bootstrapUsername.isEmpty() && !bootstrapPassword.isEmpty()) {
-            User user = new User();
-            user.setUsername(bootstrapUsername);
-            user.setPasswordHash(passwordEncoder.encode(bootstrapPassword));
-            user.setRole("ROLE_USER");
-            userRepository.save(user);
-            System.out.println("Bootstrap user created successfully.");
+        // Log what we see so Render logs confirm env vars are loaded
+        System.out.println("[InitialUserSetup] bootstrapUsername present: " + !bootstrapUsername.isEmpty());
+        System.out.println("[InitialUserSetup] bootstrapPassword present: " + !bootstrapPassword.isEmpty());
+        System.out.println("[InitialUserSetup] current user count: " + userRepository.count());
+
+        if (!bootstrapUsername.isEmpty() && !bootstrapPassword.isEmpty()) {
+            // Use findByUsername so this is idempotent on every restart - upsert the bootstrap user
+            userRepository.findByUsername(bootstrapUsername).ifPresentOrElse(
+                existingUser -> {
+                    System.out.println("[InitialUserSetup] Bootstrap user already exists: " + bootstrapUsername);
+                },
+                () -> {
+                    User user = new User();
+                    user.setUsername(bootstrapUsername);
+                    user.setPasswordHash(passwordEncoder.encode(bootstrapPassword));
+                    user.setRole("ROLE_ADMIN");
+                    userRepository.save(user);
+                    System.out.println("[InitialUserSetup] Bootstrap user created: " + bootstrapUsername + " with role ROLE_ADMIN");
+                }
+            );
+        } else {
+            System.out.println("[InitialUserSetup] WARNING: APP_BOOTSTRAP_USERNAME or APP_BOOTSTRAP_PASSWORD env var is empty - no admin user will be created!");
         }
     }
 }
